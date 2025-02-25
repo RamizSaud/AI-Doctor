@@ -1,0 +1,9 @@
+python=3.10
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+pip install --no-deps packaging ninja einops flash-attn trl peft accelerate bitsandbytes
+pip3 install -U xformers --index-url https://download.pytorch.org/whl/cu124
+
+IMPORTANT POINTS:
+1) added "flash_attn_cuda = flash_attn_gpu" in "<env>/site-packages/flash_attn/flash_attn_interface.py" (or else it shows flash attention as broken)
+2) can work without packaging ninja einops flash-attn

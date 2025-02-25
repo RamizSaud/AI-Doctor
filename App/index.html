@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahara - ChatDoctor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        #chat-container {
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fafafa;
+        }
+        #user-input {
+            width: 100%;
+            min-height: 100px;
+            max-height: 120px;
+            resize: none;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #send-btn {
+            width: 32%;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #send-btn:hover {
+            background-color: #0056b3;
+        }
+        #quit-btn {
+            background-color: #FF4C4C; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            width: 32%; 
+            padding: 10px; 
+            margin-top: 5px;
+        }
+        #quit-btn:hover {
+            background-color: #9f2f2f; 
+        }
+        #voice-start-btn {
+            background-color: #67c255; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            width: 32%; 
+            padding: 10px; 
+            margin-top: 5px;
+        }
+        #voice-start-btn:hover {
+            background-color: #417836; 
+        }
+        #voice-stop-btn {
+            background-color: #55c2c0; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            width: 32%; 
+            padding: 10px; 
+            margin-top: 5px;
+            display: none;
+        }
+        #voice-stop-btn:hover {
+            background-color: #327271; 
+        }
+        .user-message, .bot-message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .user-message {
+            text-align: right;
+            background-color: #e1f5fe;
+            color: #0277bd;
+        }
+        .bot-message {
+            text-align: left;
+            background-color: #f1f8e9;
+            color: #558b2f;
+        }
+        #audio {
+            width: 96.5%;
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin-top: -3px;
+        }
+        #audio::-webkit-media-controls-panel {
+            background-color: #f7f7f7;
+            border-radius: 10px;
+        }
+        #audio::-webkit-media-controls-play-button {
+            background-color: #6e7ddf;
+            border-radius: 50%;
+            padding: 5px;
+        }
+        #audio::-webkit-media-controls-volume-slider {
+            border-radius: 5px;
+        }
+        #audio::-webkit-media-controls-mute-button {
+            background-color: #e67e22;
+            border-radius: 50%;
+            padding: 5px;
+        }
+        #audio::-webkit-media-controls-fullscreen-button {
+            background-color: #27ae60;
+            border-radius: 50%;
+            padding: 5px;
+        }
+        #loading-indicator {
+            display: none;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
+            display: inline-block;
+            border-radius: 50%;
+            background-color: #007BFF;
+            animation: loadingAnimation 1.2s infinite ease-in-out;
+        }
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes loadingAnimation {
+            0%, 80%, 100% {
+                transform: scale(0);
+                background-color: #007BFF;
+            }
+            40% {
+                transform: scale(1);
+                background-color: #0056b3;
+            }
+        }
+        @media (max-width: 480px) {
+            .btn-container {
+                flex-direction: column;
+            }
+            #send-btn {
+                width: 100%;
+            }
+            #voice-start-btn {
+                width: 100%;
+            }
+            #voice-stop-btn {
+                width: 100%
+            }
+            #quit-btn {
+                width: 100%;
+            }
+        }
+        @media (max-width: 570px) {
+            #audio {
+                width: 93%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Sahara - ChatDoctor</h1>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <div>
+            <audio id="audio" class="audio" controls>
+                Your browser does not support the audio element.
+            </audio>
+            <textarea id="user-input" placeholder="Type your message here..."></textarea>
+            <div class="btn-container">
+                <button id="send-btn">Send Query</button>
+                <button id="voice-start-btn">Start Recording</button>
+                <button id="voice-stop-btn">Stop Recording</button>
+                <button id="quit-btn">Clear Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recorderjs/0.1.0/recorder.js"></script>
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-btn");
+        const quitButton = document.getElementById("quit-btn");
+        const audioElement = document.getElementById("audio");
+
+        const loadingIndicator = document.createElement("div");
+        loadingIndicator.id = "loading-indicator";
+        const dot1 = document.createElement("div");
+        dot1.className = "dot";
+        const dot2 = document.createElement("div");
+        dot2.className = "dot";
+        const dot3 = document.createElement("div");
+        dot3.className = "dot";
+        loadingIndicator.appendChild(dot1);
+        loadingIndicator.appendChild(dot2);
+        loadingIndicator.appendChild(dot3);
+        chatBox.parentNode.insertBefore(loadingIndicator, chatBox.nextSibling);
+    
+        sendButton.addEventListener("click", () => {
+            const query = userInput.value.trim();
+            if (query) {
+                addMessage(query, "user");
+                sendMessageToServer(query);
+                userInput.value = "";
+            }
+        });
+
+        quitButton.addEventListener("click", () => {
+        sendMessageToServer("quit").then(() => {
+            chatBox.innerHTML = "";
+            });
+        });
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement("div");
+            messageDiv.className = sender === "user" ? "user-message" : "bot-message";
+            messageDiv.textContent = text;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    
+        async function sendMessageToServer(query) {
+            try {
+                loadingIndicator.style.display = "block";
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: query }), // Send only the user message
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+    
+                const data = await response.json();
+    
+                if (data.error) {
+                    addMessage(`Error: ${data.error}`, "bot");
+                } else {
+                    const botResponse = data.response;
+                    addMessage(botResponse, "bot");
+                    
+                    if (data.audio_url) {
+                        console.log("/" + data.audio_url);
+                        audioElement.src = "/" + data.audio_url;
+                        console.log(audioElement.src);
+                        audioElement.play();
+                    }
+                }
+            } catch (error) {
+                addMessage(`Error: ${error.message}`, "bot");
+            } finally {
+                loadingIndicator.style.display = "none";
+            }
+        }
+
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById('voice-start-btn').onclick = async function () {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = function (event) {
+                audioChunks.push(event.data);
+            };
+
+            loadingIndicator.style.display = "block";
+
+            mediaRecorder.onstop = async function () {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); // Default is WebM
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm'); // Set a name for the file
+
+                // Send to server
+                const response = await fetch('/save-audio', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                addMessage(result.transcript, "user");
+                sendMessageToServer(result.transcript);
+            };
+
+            mediaRecorder.start();
+            document.getElementById('voice-start-btn').style.display = "none";
+            document.getElementById('voice-stop-btn').style.display = "block";
+        };
+
+        document.getElementById('voice-stop-btn').onclick = function () {
+            mediaRecorder.stop();
+            audioChunks = [];
+            loadingIndicator.style.display = "none";
+            document.getElementById('voice-start-btn').style.display = "block";
+            document.getElementById('voice-stop-btn').style.display = "none";
+        };
+    </script>
+</body>
+</html>
