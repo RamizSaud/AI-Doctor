@@ -10,8 +10,9 @@ This project focuses on developing an AI-driven healthcare assistant by training
 Additionally, a **web-based application** was developed to make the AI accessible to users. The application was **deployed on AWS**, ensuring scalability and availability for real-world usage.
 
 ## Demo
-Watch the project demo on YouTube:
-[![Watch the video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)]([https://www.youtube.com/watch?v=YOUR_VIDEO_ID](https://youtube.com/shorts/p-RhCBWF8sI?feature=share))
+<a href="https://youtube.com/shorts/p-RhCBWF8sI?feature=share">
+  <img src="https://img.youtube.com/vi/p-RhCBWF8sI/maxresdefault.jpg" width="100%" alt="YouTube Video Thumbnail" />
+</a>
 
 ## Repository Structure
 The repository is structured as follows:
